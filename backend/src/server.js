@@ -11,6 +11,13 @@ app.listen(PORT, () => {
 });
 
 const testZone = async () => {
+  const exists = await MicroZone.findOne({ zoneId: "BLR-ZONE-001" });
+
+  if (exists) {
+    console.log("MicroZone already exists, skipping seed");
+    return;
+  }
+
   await MicroZone.create({
     zoneId: "BLR-ZONE-001",
     city: "Bangalore",
@@ -20,7 +27,7 @@ const testZone = async () => {
     },
   });
 
-  console.log("✅ MicroZone created");
+  console.log("MicroZone created");
 };
 
 testZone();

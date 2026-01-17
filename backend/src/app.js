@@ -1,5 +1,5 @@
 const express = require("express");
-
+const pollutionRoutes = require("./routes/pollution.routes");
 const app = express();
 
 app.use(express.json());
@@ -18,5 +18,5 @@ app.use((err, req, res, next) => {
     message: "Internal Server Error",
   });
 });
-
+app.use("/api/pollution", pollutionRoutes);
 module.exports = app;
