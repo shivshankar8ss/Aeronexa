@@ -3,11 +3,13 @@ const MicroZone = require("./models/MicroZone.model");
 
 const app = require("./app");
 const connectDB = require("./config/db");
+const startPollutionJob = require("./jobs/pollutionJob");
 const PORT = process.env.PORT || 5000;
 connectDB();
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  startPollutionJob();
 });
 
 const testZone = async () => {
