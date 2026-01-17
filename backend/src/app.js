@@ -1,5 +1,6 @@
 const express = require("express");
 const pollutionRoutes = require("./routes/pollution.routes");
+const predictionRoutes = require("./routes/prediction.routes");
 const app = express();
 
 app.use(express.json());
@@ -19,4 +20,5 @@ app.use((err, req, res, next) => {
   });
 });
 app.use("/api/pollution", pollutionRoutes);
+app.use("/api/prediction", predictionRoutes);
 module.exports = app;
