@@ -3,6 +3,10 @@ const pollutionRoutes = require("./routes/pollution.routes");
 const predictionRoutes = require("./routes/prediction.routes");
 const alertRoutes = require("./routes/alert.routes");
 const exposureRoutes = require("./routes/exposure.routes");
+const authRoutes = require("./routes/auth.routes");
+
+
+
 const app = express();
 
 app.use(express.json());
@@ -21,6 +25,7 @@ app.use((err, req, res, next) => {
     message: "Internal Server Error",
   });
 });
+app.use("/api/auth", authRoutes);
 app.use("/api/pollution", pollutionRoutes);
 app.use("/api/prediction", predictionRoutes);
 app.use("/api/alerts", alertRoutes);
