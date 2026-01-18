@@ -4,6 +4,7 @@ const predictionRoutes = require("./routes/prediction.routes");
 const alertRoutes = require("./routes/alert.routes");
 const exposureRoutes = require("./routes/exposure.routes");
 const authRoutes = require("./routes/auth.routes");
+const zoneRoutes = require("./routes/zone.routes");
 const cors = require("cors");
 
 
@@ -32,6 +33,7 @@ app.use("/api/pollution", pollutionRoutes);
 app.use("/api/prediction", predictionRoutes);
 app.use("/api/alerts", alertRoutes);
 app.use("/api/exposure", exposureRoutes);
+app.use("/api/zones", zoneRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);

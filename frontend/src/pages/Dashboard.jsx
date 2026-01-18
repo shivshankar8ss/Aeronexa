@@ -4,6 +4,15 @@ import api from "../api/axios";
 import ExposureCard from "../components/ExposureCard";
 import AlertCard from "../components/AlertCard";
 
+const getLocation = () =>
+  new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve(pos.coords),
+      reject
+    );
+  });
+
+
 const Dashboard = () => {
   const { logout } = useContext(AuthContext);
   const [exposure, setExposure] = useState(null);
@@ -11,21 +20,31 @@ const Dashboard = () => {
 
   const ZONE_ID = "696bcd454ec304d850d2aa08";
 
-  useEffect(() => {
-    const fetchExposure = async () => {
-      try {
-        const res = await api.get("/exposure/daily");
-        setExposure(res.data.data);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const coords = await getLocation();
 
-        const alertRes = await api.get(`/alerts/${ZONE_ID}`);
-        setAlerts(alertRes.data.data);
-      } catch (err) {
-        console.error("Failed to fetch exposure", err);
-      }
-    };
+      const zoneRes = await api.post("/zones/resolve", {
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      });
 
-    fetchExposure();
-  }, []);
+      const zoneId = zoneRes.data.data._id;
+
+      const exposureRes = await api.get("/exposure/daily");
+      setExposure(exposureRes.data.data);
+
+      const alertRes = await api.get(`/alerts/${zoneId}`);
+      setAlerts(alertRes.data.data);
+    } catch (err) {
+      console.error("Dashboard load failed", err);
+    }
+  };
+
+  fetchData();
+}, []);
+
 
   return (
     <div style={{ padding: "20px" }}> 
@@ -44,5 +63,7 @@ const Dashboard = () => {
     </div>
   );
 };
+
+
 
 export default Dashboard;
