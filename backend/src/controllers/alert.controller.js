@@ -35,3 +35,24 @@ exports.getAlertsByZone = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.createAlert = async (req, res, next) => {
+  try {
+    const { zone, riskLevel, message } = req.body;
+
+    const alert = await Alert.create({
+      zone,
+      riskLevel,
+      message,
+    });
+
+    await redisClient.del(`alerts:${zone}`);
+
+    res.status(201).json({
+      success: true,
+      data: alert,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
