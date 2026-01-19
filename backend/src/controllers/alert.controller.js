@@ -1,5 +1,6 @@
 const Alert = require("../models/Alert.model");
 const redisClient = require("../config/redis");
+const { sendEmailAlert } = require("../services/notification.service");
 
 exports.getAlertsByZone = async (req, res, next) => {
   try {
@@ -45,8 +46,14 @@ exports.createAlert = async (req, res, next) => {
       riskLevel,
       message,
     });
-
     await redisClient.del(`alerts:${zone}`);
+    if (riskLevel === "high") {
+      sendEmailAlert({
+        to: "user@example.com", 
+        subject: "🚨 High Pollution Alert",
+        message,
+      });
+    }
 
     res.status(201).json({
       success: true,
