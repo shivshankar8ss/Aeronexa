@@ -1,5 +1,6 @@
 const PollutionData = require("../models/PollutionData.model");
 const { findOrCreateMicroZone } = require("../utils/geoGrid");
+const PollutionReading = require("../models/PollutionReading");
 
 exports.addPollutionData = async (req, res, next) => {
   try {
@@ -28,5 +29,28 @@ exports.addPollutionData = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+exports.getPollutionHistory = async (req, res, next) => {
+  try {
+    const { zoneId } = req.params;
+
+    const since = new Date();
+    since.setHours(since.getHours() - 24);
+
+    const readings = await PollutionReading.find({
+      zone: zoneId,
+      timestamp: { $gte: since },
+    })
+      .sort({ timestamp: 1 })
+      .select("aqi timestamp");
+
+    res.status(200).json({
+      success: true,
+      data: readings,
+    });
+  } catch (err) {
+    next(err);
   }
 };

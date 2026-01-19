@@ -1,11 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import api from "../api/axios";
+import AQIChart from "../components/AQIChart";
 
 const Dashboard = () => {
   const { logout } = useContext(AuthContext);
+
   const [exposure, setExposure] = useState(null);
   const [alerts, setAlerts] = useState([]);
+  const [aqiTrend, setAqiTrend] = useState([]); // ✅ moved inside
   const [loading, setLoading] = useState(true);
 
   // Get browser location
@@ -31,12 +34,17 @@ const Dashboard = () => {
 
         const zoneId = zoneRes.data.data._id;
 
-        // 3. Fetch exposure + alerts
+        // 3. Fetch exposure
         const exposureRes = await api.get("/exposure/daily");
         setExposure(exposureRes.data.data);
 
+        // 4. Fetch alerts
         const alertRes = await api.get(`/alerts/${zoneId}`);
         setAlerts(alertRes.data.data);
+
+        // 5. Fetch AQI trend
+        const trendRes = await api.get(`/pollution/history/${zoneId}`);
+        setAqiTrend(trendRes.data.data);
       } catch (err) {
         console.error("Dashboard load failed", err);
       } finally {
@@ -90,6 +98,11 @@ const Dashboard = () => {
           ) : (
             <p>No exposure data available</p>
           )}
+        </div>
+
+        {/* AQI Trend Chart */}
+        <div className="mb-6">
+          <AQIChart data={aqiTrend} />
         </div>
 
         {/* Alerts */}
