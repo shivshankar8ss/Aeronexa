@@ -1,6 +1,7 @@
 const PollutionData = require("../models/PollutionData.model");
 const { findOrCreateMicroZone } = require("../utils/geoGrid");
 const PollutionReading = require("../models/PollutionReading");
+const redisClient = require("../config/redis");
 
 exports.addPollutionData = async (req, res, next) => {
   try {
@@ -35,6 +36,17 @@ exports.addPollutionData = async (req, res, next) => {
 exports.getPollutionHistory = async (req, res, next) => {
   try {
     const { zoneId } = req.params;
+    const cacheKey = `aqi:history:${zoneId}`;
+
+
+    const cached = await redisClient.get(cacheKey);
+    if (cached) {
+      return res.json({
+        success: true,
+        data: JSON.parse(cached),
+        cached: true,
+      });
+    }
 
     const since = new Date();
     since.setHours(since.getHours() - 24);
@@ -46,9 +58,16 @@ exports.getPollutionHistory = async (req, res, next) => {
       .sort({ timestamp: 1 })
       .select("aqi timestamp");
 
-    res.status(200).json({
+    await redisClient.setEx(
+      cacheKey,
+      600,
+      JSON.stringify(readings)
+    );
+
+    res.json({
       success: true,
       data: readings,
+      cached: false,
     });
   } catch (err) {
     next(err);
