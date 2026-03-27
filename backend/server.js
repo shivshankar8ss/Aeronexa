@@ -15,14 +15,14 @@ const { errorHandler, notFound } = require('./middleware/error.middleware');
 
 const app = express();
 
-// ── Security Middleware ──────────────────────────
+// ── Security Middleware ──
 app.use(helmet());
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:3000',
   credentials: true,
 }));
 
-// ── Rate Limiting ────────────────────────────────
+// ── Rate Limiting ──
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 200,
@@ -30,31 +30,31 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// ── Body Parsing ─────────────────────────────────
+// ── Body Parsing ──
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// ── Logging ──────────────────────────────────────
+// ── Logging ──
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// ── Health Check ─────────────────────────────────
+// ── Health Check ──
 app.get('/ping', (req, res) => {
   res.json({ success: true, message: 'Aeronexa API is running 🌬️', timestamp: new Date() });
 });
 
-// ── Routes ───────────────────────────────────────
+// ── Routes ──
 app.use('/api/auth', authRoutes);
 app.use('/api/aqi', aqiRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/predict', predictRoutes);
 
-// ── Error Handling ───────────────────────────────
+// ── Error Handling ───
 app.use(notFound);
 app.use(errorHandler);
 
-// ── Database + Server Start ──────────────────────
+// ── Database + Server Start ──
 const PORT = process.env.PORT || 5000;
 
 mongoose
