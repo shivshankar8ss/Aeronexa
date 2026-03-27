@@ -8,6 +8,8 @@ import DashboardPage from './pages/DashboardPage';
 import HistoryPage from './pages/HistoryPage';
 import ProfilePage from './pages/ProfilePage';
 import Layout from './components/layout/Layout';
+import LandingPage from './pages/LandingPage'
+
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -43,15 +45,20 @@ export default function App() {
           }}
         />
         <Routes>
-          <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login"    element={<PublicRoute><LoginPage /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
-          <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="history"   element={<HistoryPage />} />
-            <Route path="profile"   element={<ProfilePage />} />
+ 
+          <Route path="/dashboard" element={<PrivateRoute><Layout /></PrivateRoute>}>
+            <Route index element={<DashboardPage />} />
           </Route>
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/history" element={<PrivateRoute><Layout /></PrivateRoute>}>
+            <Route index element={<HistoryPage />} />
+          </Route>
+          <Route path="/profile" element={<PrivateRoute><Layout /></PrivateRoute>}>
+            <Route index element={<ProfilePage />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
